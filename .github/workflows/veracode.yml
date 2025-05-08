@@ -25,7 +25,7 @@ jobs:
         uses: launchdarkly/gha-flags@v1.0.1
         with:
           sdk-key: ${{ secrets.LAUNCHDARKLY_SDK_KEY_TEST }}
-          flags: github-actions-veracode-scan-type,full
+          flags: github-actions-veracode-scan-type,'pipeline'
       - name: If full
         if: fromJSON(steps.ld.outputs.github-actions-veracode-scan-type) == 'full'
         run: echo "Running full scan (extended) not pipeline scan (fast)"
