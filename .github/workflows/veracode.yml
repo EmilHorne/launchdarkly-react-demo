@@ -26,14 +26,14 @@ jobs:
         with:
           sdk-key: ${{ secrets.LAUNCHDARKLY_SDK_KEY_TEST }}
           flags: github-actions-veracode-scan-type,'pipeline'
-      - name: Log flag value
-        run: echo ${{ steps.ld.outputs.github-actions-veracode-scan-type }}
       - name: If full
         if: fromJSON(steps.ld.outputs.github-actions-veracode-scan-type) == 'full'
         run: echo "Running full scan (extended) not pipeline scan (fast)"
       - name: If pipeline
         if: fromJSON(steps.ld.outputs.github-actions-veracode-scan-type) == 'pipeline'
         run: echo "Running pipeline scan (fast) not full scan (extended)"
+      - name: Log flag value
+        run: echo ${{ steps.ld.outputs.github-actions-veracode-scan-type }}
 
   # This workflow contains a job to build and submit pipeline scan, you will need to customize the build process accordingly and make sure the artifact you build is used as the file input to the pipeline scan file parameter
   build-and-pipeline-scan:
