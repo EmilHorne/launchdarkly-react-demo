@@ -35,6 +35,8 @@ jobs:
           echo "${{ steps.ld.outputs.github-actions-veracode-scan-type }}"
           echo "CI type:"
           echo "${{ steps.ld.outputs.git-hub-actions-ci-type }}"
+          echo "base ref:"
+          echo "${{ github.base_ref }}"
       - name: If full
         if: steps.ld.outputs.github-actions-veracode-scan-type == 'full'
         run: echo "Running full scan (extended) not pipeline scan (fast)"
