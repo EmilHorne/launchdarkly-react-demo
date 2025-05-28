@@ -8,10 +8,10 @@
 name: Veracode Static Analysis Pipeline Scan (uses LaunchDarkly to select full scan or pipeline scan)
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "release" ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ "main" ]
+    branches: [ "main", "release" ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -25,15 +25,29 @@ jobs:
         uses: launchdarkly/gha-flags@v1.0.1
         with:
           sdk-key: ${{ secrets.LAUNCHDARKLY_SDK_KEY_TEST }}
-          flags: github-actions-veracode-scan-type,'pipeline'
+          flags: |
+            github-actions-veracode-scan-type,'pipeline'
+            git-hub-actions-ci-type,'quick'
+          context-key: ${{ github.actor }}
       - name: Log flag value
-        run: echo "${{ steps.ld.outputs.github-actions-veracode-scan-type }}"
+        run: |
+          echo "veracode scan type:"
+          echo "${{ steps.ld.outputs.github-actions-veracode-scan-type }}"
+          echo "CI type:"
+          echo "${{ steps.ld.outputs.git-hub-actions-ci-type }}"
       - name: If full
         if: steps.ld.outputs.github-actions-veracode-scan-type == 'full'
         run: echo "Running full scan (extended) not pipeline scan (fast)"
       - name: If pipeline
         if: steps.ld.outputs.github-actions-veracode-scan-type == 'pipeline'
         run: echo "Running pipeline scan (fast) not full scan (extended)"
+      - name: If full CI
+        if: steps.ld.outputs.git-hub-actions-ci-type == 'full'
+        run: echo "Running full CI not quick CI"
+      - name: If quick CI
+        if: steps.ld.outputs.git-hub-actions-ci-type == 'quick'
+        run: echo "Running quick CI not full CI"
+
 
   # This workflow contains a job to build and submit pipeline scan, you will need to customize the build process accordingly and make sure the artifact you build is used as the file input to the pipeline scan file parameter
   build-and-pipeline-scan:
